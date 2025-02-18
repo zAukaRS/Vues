@@ -60,6 +60,50 @@ Vue.component('product-review', {
 });
 
 
+Vue.component('product-tabs', {
+    template: `
+    <div>
+      <ul>
+        <span class="tab" 
+              :class="{ activeTab: selectedTab === tab }"
+              v-for="(tab, index) in tabs"
+              @click="selectedTab = tab">{{ tab }}</span>
+      </ul>
+      <div v-show="selectedTab === 'Отзывы'">
+        <p v-if="!reviews.length">Отзывов пока нет.</p>
+        <ul>
+          <li v-for="review in reviews">
+            <p>{{ review.name }}</p>
+            <p>Оценка: {{ review.rating }}</p>
+            <p>{{ review.review }}</p>
+          </li>
+        </ul>
+      </div>
+      <div v-show="selectedTab === 'Оставить отзыв'">
+        <product-review @review-submitted="addReview"></product-review>
+      </div>
+    </div>
+  `,
+    props: {
+        reviews: {
+            type: Array,
+            required: false
+        },
+    },
+    data() {
+        return {
+            tabs: ['Отзывы', 'Оставить отзыв', 'Shipping', 'Details'],
+            selectedTab: 'Отзывы'
+        };
+    },
+    methods: {
+        addReview(productReview) {
+            this.reviews.push(productReview);
+        }
+    }
+});
+
+
 Vue.component('product', {
     props: {
         premium: {
