@@ -82,6 +82,9 @@ Vue.component('product-tabs', {
       <div v-show="selectedTab === 'Оставить отзыв'">
         <product-review @review-submitted="addReview"></product-review>
       </div>
+      <div v-show="selectedTab === 'Shipping'">
+        <p>Стоимость доставки: {{ shipping }}</p>
+      </div>
     </div>
   `,
     props: {
