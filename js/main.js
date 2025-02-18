@@ -128,7 +128,8 @@ Vue.component('product', {
     template: `
     <div class="product">
       <div class="product-image">
-        <img :src="image" :alt="altText"/>
+        <img :src="image" :alt="altText" ref="sockImage">
+        <img v-if="isFlying" :src="image" class="flying-sock" :style="flyStyle"/>
       </div>
       <div class="product-info">
         <h1>{{ title }}</h1>
@@ -197,8 +198,35 @@ Vue.component('product', {
             if (variant.variantQuantity > 0) { // проверка на наличие
                 this.$emit('add-to-cart', variant.variantId); // отправка в родительский компонент
                 variant.variantQuantity--; // уменьшаем
+
+                this.startFlyAnimation(); //запуск полета носка при нажатии
             }
         },
+
+        startFlyAnimation() {
+            const sock = this.$refs.sockImage.getBoundingClientRect(); //для точного определения местоположения
+            const cart = document.querySelector(".cart").getBoundingClientRect();
+            const translateX = cart.left + cart.width / 2 - (sock.left + sock.width / 2);
+            const translateY = cart.top + cart.height / 2 - (sock.top + sock.height / 2);
+            const flyingSock = this.$refs.sockImage.cloneNode(true); // создаем копию, чтобы сам носок не пропадал
+            flyingSock.style.position = "fixed";
+            flyingSock.style.top = `${sock.top}px`;
+            flyingSock.style.left = `${sock.left}px`;
+            flyingSock.style.width = `${sock.width}px`;
+            flyingSock.style.transition = "transform 0.8s ease-in-out, opacity 0.8s";
+            flyingSock.style.zIndex = "1000";
+            document.body.appendChild(flyingSock);
+            setTimeout(() => {
+                flyingSock.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.01)`;
+                flyingSock.style.opacity = "0";
+            }, 10);
+            setTimeout(() => {
+                flyingSock.remove();
+            }, 900);
+        },
+
+
+
         removeFromCart() {
             let variant = this.variants[this.selectedVariant]; // получаем текущий вариант носков
             if (this.cartCount(this.selectedVariant) > 0) { // проверка на наличие в корзине

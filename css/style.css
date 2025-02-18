@@ -42,11 +42,19 @@ img {
 }
 
 .cart {
-    margin-right: 25px;
-    float: right;
+    position: fixed;
+    top: 20px;
+    right: 30px;
     border: 1px solid #d8d8d8;
-    padding: 5px 20px;
+    padding: 10px 20px;
+    background: white;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    z-index: 1000;
 }
+
 
 button {
     margin-top: 30px;
@@ -88,4 +96,14 @@ textarea {
 .activeTab {
     color: #16C0B0;
     text-decoration: underline;
+}
+
+
+
+.flying-sock {
+    position: fixed;
+    width: 70px;
+    height: auto;
+    z-index: 1000;
+    animation: flyToCart 1.5s linear forwards;
 }
