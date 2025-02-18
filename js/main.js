@@ -59,7 +59,6 @@ Vue.component('product-review', {
     }
 });
 
-
 Vue.component('product-tabs', {
     template: `
     <div>
@@ -97,6 +96,14 @@ Vue.component('product-tabs', {
             type: Array,
             required: false
         },
+        shipping: {
+            type: String,
+            required: true
+        },
+        details: {
+            type: Array,
+            required: true
+        }
     },
     data() {
         return {
@@ -110,7 +117,6 @@ Vue.component('product-tabs', {
         }
     }
 });
-
 
 Vue.component('product', {
     props: {
@@ -126,7 +132,9 @@ Vue.component('product', {
       </div>
       <div class="product-info">
         <h1>{{ title }}</h1>
-        <p v-if="inStock">В наличии</p>
+        <p v-if="inStock">
+            В наличии ({{ variants[selectedVariant].variantQuantity }})
+        </p>
         <p v-else>Нет в наличии</p>
         <ul>
           <li v-for="detail in details">{{ detail }}</li>
@@ -149,7 +157,7 @@ Vue.component('product', {
         </button>
         <button
           v-on:click="removeFromCart"
-          :disabled="!inStock"
+          :disabled="cartCount(selectedVariant) === 0"
         >
           Удалить из корзины
         </button>
@@ -169,13 +177,15 @@ Vue.component('product', {
                     variantId: 2234,
                     variantColor: 'green',
                     variantImage: "./assets/vmSocks-green-onWhite.jpg",
-                    variantQuantity: 10
+                    variantQuantity: 10,
+                    initialQuantity: 10,
                 },
                 {
                     variantId: 2235,
                     variantColor: 'blue',
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 0
+                    variantQuantity: 0,
+                    initialQuantity: 0,
                 }
             ],
             reviews: []
@@ -183,13 +193,24 @@ Vue.component('product', {
     },
     methods: {
         addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+            let variant = this.variants[this.selectedVariant]; // получаем текущий вариант носков
+            if (variant.variantQuantity > 0) { // проверка на наличие
+                this.$emit('add-to-cart', variant.variantId); // отправка в родительский компонент
+                variant.variantQuantity--; // уменьшаем
+            }
         },
         removeFromCart() {
-            this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId);
+            let variant = this.variants[this.selectedVariant]; // получаем текущий вариант носков
+            if (this.cartCount(this.selectedVariant) > 0) { // проверка на наличие в корзине
+                this.$emit('remove-from-cart', variant.variantId); // отправка в родительский компонент
+                variant.variantQuantity++; // увеличиваем
+            }
         },
         updateProduct(index) {
             this.selectedVariant = index;
+        },
+        cartCount(variantIndex) {
+            return this.$root.cart.filter(id => id === this.variants[variantIndex].variantId).length;
         }
     },
     computed: {
@@ -207,11 +228,6 @@ Vue.component('product', {
         }
     }
 });
-
-
-
-
-
 
 let app = new Vue({
     el: '#app',
