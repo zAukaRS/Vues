@@ -85,6 +85,11 @@ Vue.component('product-tabs', {
       <div v-show="selectedTab === 'Shipping'">
         <p>Стоимость доставки: {{ shipping }}</p>
       </div>
+      <div v-show="selectedTab === 'Details'">
+        <ul>
+          <li v-for="detail in details">{{ detail }}</li>
+        </ul>
+      </div>
     </div>
   `,
     props: {
