@@ -78,6 +78,20 @@ Vue.component('product', {
             this.selectedVariant = index;
         }
     },
+    computed: {
+        title() {
+            return this.brand + ' ' + this.product;
+        },
+        image() {
+            return this.variants[this.selectedVariant].variantImage;
+        },
+        inStock() {
+            return this.variants[this.selectedVariant].variantQuantity;
+        },
+        shipping() {
+            return this.premium ? "Бесплатно" : 2.99;
+        }
+    }
 });
 
 
